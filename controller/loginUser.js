@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt";
 import User from "../model/userSchema.js";
+import jwt from "jsonwebtoken"
+import "dotenv/config"
 
 export default async function logInUser(req,res){
     console.log(`Request URL: ${req.url}, Request Method: ${req.method}`);
@@ -26,7 +28,25 @@ export default async function logInUser(req,res){
             return res.status(401).json({ error: "Invalid password" });
         }
 
-        return res.status(200).json({ message: "Login successful", user });
+        const accessToken = process.env.ACCESS_TOKEN_SECRET;
+
+        if(!accessToken){
+            console.log("ACCESS TOKEN SECRET not found 🚨");
+            throw new Error('ACCESS TOKEN SECRET not found 🚨')
+        }
+
+        const token = jwt.sign(
+            {
+                id : user._id , 
+                email : user.email
+            } 
+            , accessToken ,
+            {
+                expiresIn : '1h'
+            } 
+        )
+
+        return res.status(200).json({ message: "Login successful", user , token });
     } catch (error) {
         console.error('❌ Error logging in user:', error);
         return res.status(500).json({ error: 'Internal server error' });

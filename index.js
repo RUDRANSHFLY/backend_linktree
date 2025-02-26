@@ -17,6 +17,8 @@ app.use(express.json());
 app.use('/api/auth',authRouter)
 
 
+
+
 app.listen(PORT,() => {
     console.log(`Server started 🌟`);
     console.log(`http://localhost:${PORT}`)
