@@ -16,8 +16,7 @@ authRouter.get('/login',(req,res) => {
 });
 
 authRouter.get('/userinfo', authenticateToken , (req,res) => {
-    const user = getUser(req.user.email)
-    return res.json(200).json({"message" : "sucess" , "user" : user})
+    return getUser(req , res)
 })
 
 export default authRouter;
