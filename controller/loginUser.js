@@ -39,16 +39,26 @@ export default async function logInUser(req, res) {
 
         if (user.referredBy) {
             console.log(`refererdByUser ID : ${user.referredBy} referredUser: ${user.id}`);
-            
-            const refer = await Referral.findOneAndUpdate({
+
+            const refer = await Referral.findOne({
                 refererdByUser: user.referredBy,
                 referredUser: user.id,
-            }, {
-                $set: {
-                    status: "success",
-                    sucessDate: new Date(),
-                }
-            }, {new : true})
+            })
+
+            if (refer && refer.status !== "success") {
+                const updatedRefer = await Referral.findOneAndUpdate(
+                    {
+                        refererdByUser: user.referredBy,
+                        referredUser: user.id,
+                    },
+                    {
+                        $set: {
+                            status: "success",
+                            sucessDate: new Date(),
+                        }
+                    }, { new: true }
+                )
+            }
             console.log("Referall Updated ✅");
         }
 
