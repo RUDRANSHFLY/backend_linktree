@@ -10,8 +10,8 @@ export default async function getReferals(req,res){
 
     try {
         const referrals = await User.find({referredBy : userId})
-        console.table(referrals)
-        res.status(200).json(referrals);
+        const count = referrals.length;
+        res.status(200).json({"message" :  "sucess" , referrals, count});
     } catch (error) {
         console.log("Error while fetching refeerals : ", error);
         res.status(400).json({"message" : "Error fetching referaals" })
