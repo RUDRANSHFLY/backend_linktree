@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt"
 import {validateEmail} from "../util/validateEmail.js"
+import generateReferralCode from "../util/generateToken.js"
 import User from "../model/userSchema.js"
 
 
@@ -7,7 +8,7 @@ export default async function createUser(req,res){
     console.log(`Request URL: ${req.url}, Request Method: ${req.method}`);
 
 
-    const { userName, password , email, phoneNumber, occupation } = req.body; 
+    const { userName, password , email, phoneNumber, occupation , referralCode  } = req.body; 
 
     if(!userName.trim() || !password.trim() || !email.trim()){
         const missingUrl = "Missing mandatory values : "+
@@ -22,7 +23,7 @@ export default async function createUser(req,res){
         })
     }
 
-    const data = [userName , password , email , occupation ]
+    const data = [userName , password , email , occupation , referralCode]
 
     console.table(data)
 
@@ -37,16 +38,31 @@ export default async function createUser(req,res){
     }
 
     // ? Secured and Encrypted Password
-    const hashedPassword = await bcrypt.hash(password,10)
+    const hashedPassword = await bcrypt.hash(password.trim(),10)
+
+    let referredBy = null;
+
+    if(referralCode){
+        const referer = await User.findOne({referralCode})
+        if(referer){
+            referredBy = referer._id
+        }
+    }
 
 
     try {
+
+
+
 
         const user = new User({
             userName : userName,
             email : email,
             password : hashedPassword,
+            phoneNumber : phoneNumber,
             occupation : occupation,
+            referralCode : generateReferralCode(),
+            referredBy : referredBy,
         });
 
         await user.save();
