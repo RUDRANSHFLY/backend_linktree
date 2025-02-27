@@ -23,6 +23,18 @@ const userSchema = new mongoose.Schema({
         type : String ,
         required : true,
     },
+    referralCode :
+    {
+        type : String,
+        required : false,
+        index : true,
+    },
+    referredBy : {
+        type : mongoose.Schema.Types.ObjectId , 
+        ref : "User",
+        default: null ,
+    }
+
 } , {timestamps : true});
 
 
