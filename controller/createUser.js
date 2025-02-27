@@ -78,7 +78,7 @@ export default async function createUser(req,res){
             const field = Object.keys(error.keyValue)[0]; 
             const value = error.keyValue[field]; 
             console.log(`${field} '${value}' already exists.`)
-            return res.status(400).json({ error: `${field} '${value}' already exists.` });
+            return res.status(409).json({ error: `${field} '${value}' already exists.` });
         } else {
             console.error('Error creating user:', error); 
             return res.status(500).json({ error: 'Internal server error' }); 
