@@ -2,6 +2,7 @@ import bcrypt from "bcrypt"
 import {validateEmail} from "../util/validateEmail.js"
 import generateReferralCode from "../util/generateToken.js"
 import User from "../model/userSchema.js"
+import Referral from "../model/referSchema.js"
 
 
 export default async function createUser(req,res){
@@ -51,10 +52,6 @@ export default async function createUser(req,res){
 
 
     try {
-
-
-
-
         const user = new User({
             userName : userName,
             email : email,
@@ -66,6 +63,19 @@ export default async function createUser(req,res){
         });
 
         await user.save();
+
+        if(referralCode){
+            const referer = await User.findOne({referralCode})
+            if(referer){
+                const refer = new Referral({
+                    refererdByUser : referer._id,
+                    referredUser : user._id,
+                })
+
+                await refer.save();
+                console.log("New Referral Created ✅")
+            }
+        }
 
         console.log("New User Created ✅")
         return res.status(201).json({
